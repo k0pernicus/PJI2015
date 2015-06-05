@@ -1,0 +1,5 @@
+sardines            Reproduce               100
+sardines            Eat                     80      food        0.5
+sardines            Die                     0
+
+food                Grow                    0       UPDATE

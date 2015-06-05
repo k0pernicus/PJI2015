@@ -1,0 +1,35 @@
+interaction Migration
+    trigger     not:enoughFood?
+    condition	stillAlive? not:target:samePatch? not:food-migration? target:stillAlive?
+    condition   stillAlive? target:enoughFood? food-migration? target:stillAlive?
+    actions     migration   eat
+end
+
+interaction Reproduce
+    trigger	    canReproduce?
+    condition   stillAlive? not:hungry? target:stillAlive?
+    actions     reproduce eat
+end
+
+interaction Eat
+    trigger     hungry?
+    condition   stillAlive? target:stillAlive?
+    actions     eat
+end
+
+interaction Die
+    trigger     hungry?
+    actions	    die
+end
+
+...
+
+interaction ComputeBiomassReq
+    condition   stillAlive?
+    actions     computeBiomassReq
+end
+
+;;FOOD
+interaction Grow
+    actions     grow
+end

@@ -1,0 +1,19 @@
+interaction Eat
+  trigger	PRED_hungry?
+  condition	PRED_stillAlive? target:PREY_stillAlive?
+  actions	PRED_eat
+end
+
+...
+
+to-report agent::stillAlive?
+  report biomass-f > 0
+end
+
+to-report mackerels::PRED_stillAlive?
+  report agent::stillAlive?
+end
+
+to-report mackerels::PREY_stillAlive?
+  report agent::stillAlive?
+end

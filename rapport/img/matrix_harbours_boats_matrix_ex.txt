@@ -1,0 +1,12 @@
+boats             ToFish                100   anchovies   1
+boats             ToFish                100   mackerels   1
+boats             ToFish                100   sardines    1
+boats             ToFish                100   tunas       1
+boats             MoveWithoutFishing    80
+boats             GoToHarbour           80
+
+harbours        ComputeFoodStock        10  UPDATE
+harbours        ComputeBoatsAvailable   10  UPDATE
+
+boats           VerifySailing           10  UPDATE
+boats           DecrTick                10  UPDATE

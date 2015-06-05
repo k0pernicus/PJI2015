@@ -1,0 +1,49 @@
+
+;DeployABoat -> make a boat to sail
+interaction DeployABoat
+    trigger boatsAvailableToSail?
+    condition not:target:isSailing?
+    actions deployABoat
+end
+
+;The harbour computing if he could sell his food stock
+interaction ComputeFoodStock
+    actions computeFoodStock
+end
+
+;The harbour computing number of boats available to sail
+interaction ComputeBoatsAvailable
+    actions computeBoatsAvailable
+end
+
+;;BOATS
+
+;A boat will fish if he's sailing, he can sail again and if the prey is still alive
+interaction ToFish
+    condition   isSailing? isAvailableToSail? target:PREY_stillAlive?
+    actions     toFish
+end
+
+;Interaction to move without fishing
+interaction MoveWithoutFishing
+    condition   isSailing? isAvailableToSail? not:target:PREY_stillAlive?
+    actions     moveWithoutFishing
+end
+
+;A boat will go to harbour if he's sailing and if he's not available to sail
+interaction GoToHarbour
+    condition   isSailing? not:isAvailableToSail?
+    actions     goToHarbour
+end
+
+;Interaction to verify he the boat is sailing
+interaction VerifySailing
+    condition   isSailing? isAvailableToSail?
+    actions     verifySailing
+end
+
+;Interaction to decrement ticks
+interaction DecrTick
+    condition   isSailing? isAvailableToSail?
+    actions     decrTick
+end

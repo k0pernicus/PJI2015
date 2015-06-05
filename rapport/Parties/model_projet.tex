@@ -1,0 +1,334 @@
+\chapter{Modélisation du projet}
+
+La modélisation du projet a été réalisée avec Netlogo et l'extension IODA.
+\\
+L'évolution du projet a été constante sur toute sa durée, de l'implémentation des premiers agents, de leurs prédateurs (afin de pouvoir établir une chaîne alimentaire), et enfin des pêcheurs et de l'évaluation des scores.
+\\
+Concernant l'utilisation des outils permettant la modélisation, nous avons dû nous former sur ceux-ci, Netlogo et IODA nous étant alors inconnu. Cette formation a ainsi débouché sur une compréhension générale du fonctionnement de la plateforme Netlogo et du moteur IODA, nous ayant permis de débuter le projet. La suite de celui-ci nous a ensuite permis d'expérimenter et de terminer cette formation.\nocite{largouet}
+
+\section{Caractéristiques et comportements des agents}
+
+Chaque espèce marine sera représentée par un agent - appelé \textit{breed} en Netlogo, caractérisant une sous-espèce de \textit{turtles}\footnote{Il est important de notifier que la notion d'héritage n'existe pas pour les \textit{breeds} Netlogo.}. Elle est représentée dans la modélisation par son abondance, c'est-à-dire la quantité de sa biomasse.
+\\
+\begin{figure}[h]
+\begin{center}
+\includegraphics[scale=0.43]{img/breed_exemple.png}
+\end{center}
+\caption{Schéma récapitulatif quant à l'implémentation des \textit{turtles} et des \textit{breeds} pour Netlogo.}
+\label{fig:beed_exemple}
+\end{figure}
+
+Attention! Il est important de faire remarquer que l'on se servira de l'espace de nommage IODA pour expliciter au programmeur quel \textit{breed} Netlogo exécute quelle primitive! Ainsi, \textbf{nous parlons d'\textit{agents} (en italique) comme d'une convention implicite de nommage permettant de dire que la primitive est exécutée par tout agent implémenté} (\textit{Boats}, \textit{Anchovies}, \textit{Mackerels}, etc...).
+
+On recense 3 types d'agents:
+\begin{itemize}
+	\item{\textbf{les proies} : le plancton (\textit{Food} dans la modélisation),}
+	\item{\textbf{les proies/prédateurs} : le maquereau, la sardine, etc...}
+	\item{\textbf{les prédateurs} : le thon, le pêcheur.}
+\end{itemize}
+
+\begin{figure}[h]
+\begin{center}
+\includegraphics[scale=0.46]{img/agents_exemple.png}
+\end{center}
+\caption{Modélisation des différents \textit{types} d'agents. La flèche signifie que l'espèce pointée est la proie de l'espèce pointeuse.}
+\label{fig:beed_exemple}
+\end{figure}
+
+Chaque type d'agents diffère par ses caractéristiques propres, mais aussi par l'implémentation de ses comportements. Ainsi, chaque type (ou classe) d'agents a des caractéristiques et comportements différents des autres.
+\\
+Par contre, chaque agent d'un même type détient les mêmes caractéristiques, à ceci près que les valeurs de ces paramètres peuvent être différentes (en fonction des conditions biologiques, de leur type de prédation, etc...). Ainsi, tous les agents proies/prédateurs partagent les mêmes caractéristiques.
+\\
+Pour finir, chaque interaction sera implémentée dans un fichier d'interactions, tandis que sa déclaration, son agissement et sa priorité seront définies dans une matrice d'interactions.
+
+\subsection{Caractéristiques des agents}
+
+\subsubsection{Les agents proies}
+
+Les proies ont un nombre réduit de caractéristiques, dû au fait qu'ils se situent au plus bas de la chaîne alimentaire.
+
+\subsubsection{Les agents proies/prédateurs}
+
+Les agents proies/prédateurs auront un grand nombre de caractéristiques, compte-tenu du fait qu'ils appartiennent aux deux grandes classes d'individus.
+
+\subsubsection{Les agents prédateurs}
+
+Les agents prédateurs, eux, sont encore divisé en deux grandes catégories:
+\begin{itemize}
+	\item{les agents prédateurs (pour les espèces marines),}
+	\item{les agents prédateurs humains, agissant sur les espèces marines.}
+\end{itemize}
+
+\begin{figure}[h]
+\begin{center}
+\scalebox{0.84}{
+\begin{tabular}{|c|c|c|c|c|}
+  \hline
+  \textbf{Properties} & \textbf{Preys} & \textbf{Preys}/\textbf{Predators} & \textbf{(Fishes) Predators} & \textbf{(Humans) predators}\\
+  \hline
+  Biomass & True & True & True & False \\
+  Biomass requirement & False & True & True & False \\
+  Old biomass & True & True & True & False \\
+  Food maxi & True & True & True & False \\
+  Food stock & False & True & True & True \\
+  Mortality & False & True & True & False \\
+  Reproduction & False & True & True & False \\
+  Food consumption & False & True & True & False \\
+  Migration strategy & False & True & True & True \\
+  \hline
+\end{tabular}
+}
+\end{center}
+
+\caption{Tableau récapitulatif concernant les grandes caractéristiques des différentes catégories d'agents.}
+\label{fig:recap_caracteristics}
+\end{figure}
+
+\subsection{Les comportements des individus}
+
+Afin de faciliter la compréhension des matrices contenant les comportements des individus, nous nous appuierons d'abord sur un exemple simple : un écosystème ne contenant qu'une espèce marine prédatrice (\textit{agent}) et qu'une espèce primitive marine (\textit{Food}).
+
+\subsubsection{La matrice d'interactions}
+
+La priorité donnée aux comportements des agents est définie dans une matrice, dont les interactions avec IODA nous permettra de modifier à la volée et à volonté certains paramètres contenus dans cette dernière (par exemple, pour le changement de migration d'une espèce marine donnée).
+\\
+Nous rappelons qu'\textbf{un seul comportement est exécuté} par agent sera exécuté pour un pas de temps (ou \textit{tick}\footnote{Un \textit{tick} correspond à un pas de temps dans la simulation.}).
+\begin{figure}[h]
+\begin{center}
+\begin{tabular}{|c|l|c|c|c|}
+  \hline
+  \textbf{sources} & \textbf{interactions} & \textbf{priority} & \textbf{targets} & \textbf{distances}\\
+  \hline
+  agent & Migration & 100 &  Food & 1 \\
+  agent & Reproduce & 80 & Food & 0.5 \\
+  agent & Eat & 70 & Food & 0.5 \\
+  agent & Die & 20 & UPDATE & // \\
+  agent & ComputeBiomassReq & 10 & UPDATE & // \\
+  agent & ComputeFoodMaxi & 10 & UPDATE & // \\
+  agent & ComputeOldBiomassF & 0 & UPDATE & // \\
+  agent & Digest & 0 & UPDATE & // \\
+  \hline
+  Food & Grow & 0 & UPDATE & // \\
+  \hline
+\end{tabular}
+\end{center}
+
+\caption{Un exemple simple de la matrice d'interactions pour une espèce marine (agent) et le plancton (\textit{Food}). \textbf{Ex1:} L'agent \textit{agent} va adopter pour le \textit{tick} \textbf{x} le comportement \textit{Migration} avec une priorité de 100, sur un agent \textit{Food} à distance 1 de lui. \textbf{Ex2:} L'agent \textit{agent} va adopter pour le \textit{tick} \textbf{x} le comportement \textit{Digest} avec une priorité 0.}
+\label{fig:matrice_interact_simple}
+\end{figure}
+
+La matrice d'interactions, présentée en Figure \ref{fig:matrice_interact_simple}, montre plusieurs choses intéressantes et nécessaires à la compréhension de la simulation:
+\begin{itemize}
+\item{seuls les deux agents sont présents (colonne \textit{breed})}
+\item{plusieurs comportements sont définis pour l'espèce \textit{agent} - chaque comportement possède une certaine priorité, et chaque agent cherche à réaliser une interaction de priorité la plus élevée possible (en tenant compte que toutes les conditions de ce comportement sont validées)\footnote{On rappelle ici que le moteur IODA est déterministe.}: }
+	\begin{itemize}
+	\item{un comportement défini prenant une cible, sur une distance définie,}
+	\item{un comportement défini ne prenant aucune cible; il sera donc défini comme une mise-à-jour pour chaque pas de temps}
+	\end{itemize}
+\item{un seul comportement est défini pour \textit{Food} - il est intéressant de constater ici que même si le poids de réalisation est de 0, ce comportement sera défini comme priorité, car seul.}
+\end{itemize}
+
+\subsubsection{Le fichier d'interactions}
+
+Le fichier d'interactions permet de définir les comportements pris en compte dans la matrice d'interactions.
+\\
+En prenant exemple sur la Figure \ref{fig:matrice_interact_simple}, nous pouvons pour donner un exemple écrire le fichier d'interactions (voir Figure \ref{fig:fichier_interact_simple}) correspondant.
+\\
+La méthodologie d'écriture pour une interaction IODA est la suivante:
+\begin{enumerate}
+\item{se poser la question "Qui (un agent) fait quoi (une interaction)? Et avec Qui?",}
+\item{définir les interactions dans la matrice d'interactions, avec l'apport du déclenchement (le \textit{trigger}), des conditions (\textit{Conditions}) et des actions (\textit{Actions}),}
+\item{enfin, le codage des primitives.}
+\end{enumerate}
+Concrètement, chaque interaction est définie par le mot-clef \textit{\textbf{interaction}}, et se termine avec le mot-clef \textit{\textbf{end}}.
+\\
+Une interaction est appelée automatiquement si le \textit{\textbf{trigger}} est bien validé. Aussi, il faut que les conditions soient justifiées pour l'agent mais aussi pour sa cible si elle existe (appelée avec \textit{\textbf{target:}}). Chaque suite de conditions est ainsi composée d'une suite de disjonction de conditions, permettant de mettre-en-oeuvre l'interaction si au moins l'une des conditions est respectée!
+\\
+Enfin, la dernière étape est l'appel des procédures et/ou fonctions à appeler dans le champ \textit{\textbf{actions}} de l'interaction.
+
+\begin{figure}[htbp]
+	\makebox[\textwidth]{\hrulefill}{
+	\small
+	\verbatiminput{img/matrix_ex.txt}
+	\normalsize}
+	\caption{Un extrait du fichier d'interactions, correspondant avec l'exemple de la Figure \ref{fig:matrice_interact_simple}.}
+	\label{fig:fichier_interact_simple}
+\end{figure}
+
+Cette section marque la fin de l'implémentation de la base de la modélisation.\\
+Cette partie a été l'une des plus difficile à mettre en oeuvre mais aussi la plus contraignante, étant donné qu'il a fallu retranscrire avec précision chaque caractéristique et comportement pour un agent, en sachant que toute la suite du projet repose sur cette base d'implémentation. Ainsi, il a fallu prévoir les modifications qui ont dû être effectuées par la suite.
+
+\section{La création de la chaîne alimentaire}
+
+Pour la chaîne alimentaire, nous avons envisagé plusieurs scénarios:
+\begin{itemize}
+\item{une proie peut être finale\footnote{Une espèce est une proie finale si elle n'est pas prédatrice pour une autre espèce.} ou non,}
+\item{un prédateur peut être une proie pour une autre espèce ou non,}
+\item{un prédateur peut manger une ou plusieurs proie(s),}
+\item{deux prédateurs peuvent entrer en compétition pour une seule proie.}
+\end{itemize}
+
+\begin{figure}[h]
+\begin{center}
+\includegraphics[scale=0.465]{img/config_preypred_schema.png}
+\end{center}
+\caption{5 schémas permettant de comprendre les scénarios envisagés - les cercles représentants les proies, les carrés représentant les prédateurs.
+\\
+1) Un prédateur cible une proie finale.\\
+2) Un prédateur cible une proie (non-finale) qui elle cible une proie finale.\\
+3) Un prédateur cible deux proies finales.\\
+4) Deux prédateurs ciblent une proie finale.\\
+5) Un prédateur cible deux proies non-finales qui, elles, ciblent une seule proie finale.
+}
+\label{fig:config_preypred_schema}
+\end{figure}
+
+Étant donné que l'utilisation de l'héritage (comme vu dans la Programmation Orientée Objet) n'existe pas en Netlogo, la modélisation de la chaîne alimentaire a été un peu plus difficile à mettre en oeuvre.
+\\
+Chaque comportement ayant été implémenté pour une espèce générique (\textit{agent}), nous avons dû redéclarer chaque comportement pour l'espèce en cours d'implémentation. Le problème qui se pose est alors de bien différencier l'utilisation d'une primitive pour: soit un prédateur, soit une proie. La spécification du type Proie/Prédateur de l'espèce pour un comportement a donc été implémentée dès que l'utilisation le permettait.
+
+\begin{figure}[h]
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|}
+  \hline
+  \textbf{Breed} & \textbf{Preys} & \textbf{Predators} & \textbf{Eat...}\\
+  \hline
+  Food & True & False & Nothing \\
+  Sardines & True & False & Food \\
+  Anchovies & True & True & Sardines \\
+  Mackerels & True & True & Sardines \\
+  Tunas & False (for Fishes) & True & Anchovies \& Mackerels \\
+  \hline
+\end{tabular}
+\end{center}
+
+\caption{Tableau récapitulatif concernant l'implémentation des différents agents de la simulation.}
+\label{fig:recap_agents}
+\end{figure}
+
+La matrice d'interactions ainsi que la modélisation de la simulation ont ainsi été revues afin de permettre une meilleure compréhension et lisibilité du code (voir Figure \ref{fig:recap_agents}).
+\\
+Ainsi, une espèce proie \textbf{et} prédateur détenant le comportement \textit{isAlive?} implémentera une méthode pour Proie ainsi qu'une autre pour Prédateur\footnote{Notre nomenclature voudra que chaque comportement exécuté pour une proie sera précédé par \textbf{PREY\_}, et que chaque comportement exécuté pour un prédateur sera précédé par \textbf{PRED\_}.}, chacune exécutant le comportement général \textit{isAlive?}.
+\\
+Il faudra faire attention à la notion de Proie pour l'agent \textit{Tunas}. En effet, aucune autre espèce marine n'est un prédateur pour cet agent, mais il ne faut pas oublier que chaque espèce marine est une proie pour les pêcheurs!
+
+\begin{figure}[htbp]
+	\makebox[\textwidth]{\hrulefill}{
+	\small
+	\verbatiminput{img/new_matrix_multiple_agents.txt}
+	\normalsize}
+	\caption{Exemple de l'implémentation d'un comportement général pour une espèce proie/prédateur.}
+	\label{fig:recap_agents}
+\end{figure}
+
+\section{Le cas de la pêche}
+
+La pêche introduit deux nouveaux agents dans la simulation : les ports (\textit{Harbours}) et les bateaux, ou pêcheurs (\textit{Boats}).
+\\
+Les ports influencent la création de bateaux, ainsi que l'espèce ou les espèces marine(s) à pêcher. Elles n'ont ainsi aucune influence directe sur chaque espèce marine, \textit{a contrario} des bateaux influenceront directement la variation d'espèces marines via la pêche, selon le nombre de bateaux déployés et des espèces pêchées par ceux-ci. Ainsi, les pêcheurs sont qualifiés de \textit{super-prédateurs}, car elles n'ont pas de prédateurs.
+\\
+Comme ces derniers n'ont pas de prédateurs, il va falloir implémenter des contraintes permettant de réduire leur dominance sur la majorité de l'écosystème marin. Des contraintes (inspirées de celles réelles) sur les bateaux et sur les ports ont donc été implémentés:
+\begin{itemize}
+\item{chaque port a un nombre fixé de bateaux à déployer en mer,}
+\item{chaque port a un certain nombre d'espèces pris en compte quant à la pêche - ce nombre peut être compris entre \textit{1} et \textit{n}, \textit{n} étant le nombre total d'espèces marines,}
+\item{chaque bateau est spécifique à un port,}
+\item{chaque bateau ne peut supporter une charge de biomasse supérieure à son seuil maximum fixé - il sera ainsi obligé de rentrer au port décharger sa cargaison,}
+\item{chaque bateau détient une réserve de fioul, initialisée au départ du port - si cette réserve atteint un seuil égal à la réserve nécessaire pour rentrer au port, celui-ci retourne décharger sa cargaison.}
+\end{itemize}
+
+\begin{figure}[htbp]
+	\makebox[\textwidth]{\hrulefill}{
+	\small
+	\verbatiminput{img/matrix_harbours_boats_matrix_ex.txt}
+	\normalsize}
+	\caption{Exemple de l'implémentation de la matrice d'interactions pour les agents \textit{Harbours} et \textit{Boats}.}
+	\label{fig:matrix_harbours_boats}
+\end{figure}
+
+Comme l'ensemble de ces nouveaux agents n'ont pas de comportements liés aux espèces marines déjà implémentés, la redéclaration des primitives n'est pas utile dans cette partie du projet. Nous avons ainsi défini de nouveaux comportements, propres aux ports et aux bateaux, afin de gérer au mieux l'ensemble des interactions avec le milieu marin, mais aussi entre les ports et les bateaux, voire même entre les bateaux aussi (voir Figure \ref{fig:matrix_harbours_boats} et Figure \ref{fig:interactions_harbours_boats}).
+
+\begin{figure}[htbp]
+	\makebox[\textwidth]{\hrulefill}{
+	\small
+	\verbatiminput{img/matrix_harbours_boats_interactions_ex.txt}
+	\normalsize}
+	\caption{Extrait des comportements pour les agents \textit{Harbours} et \textit{Boats}.}
+	\label{fig:interactions_harbours_boats}
+\end{figure}
+
+\section{L'expérimentation}
+
+C'est à partir de l'implémentation concernant la chaîne alimentaire qu'il a fallu expérimenter la simulation en testant et en modifiant chaque paramètre pris en compte lors de la modélisation car, en ayant introduit de nouveaux agents influençant directement les autres agents, nous avons totalement bouleversé l'écosystème - le réduisant dans un premier temps à un écosystème se réduisant au plancton, seul survivant de la modélisation après \textit{x} tours.
+\\
+Pour avoir un modèle crédible sur lequel tester l'impact de la pêche, il faut que l'écosystème soit viable sur le long terme. Ainsi, pour résoudre ce problème efficacement, Netlogo possède un outil d'analyse, appelé \textit{BehaviorSpace} (exemple Figure \ref{fig:behaviorspace}), permettant de lancer la simulation \textit{n} fois pour chaque jeu de paramètres choisi. Grâce à cet outil, nous avons pu mettre en place différents tests afin de trouver un équilibre.
+\\
+Le fonctionnement de notre modèle imposait de tester espèce par espèce. Dans un premier temps, il a fallu determiner des paramètres à tester, l'utilisation d'un trop grand nombre de paramètres générant des expériences trop longues. Il a été préféré les trois critères de recherche suivant (voir le deuxième cadre de la Figure \ref{fig:behaviorspace}):
+\begin{itemize}
+\item{la mortalité,}
+\item{la consommation de nourriture,}
+\item{la reproduction.}
+\end{itemize}
+Le système ne permettant pas la survie des différentes espèces, la recherche en temps de survie des différentes espèces était plus pertinente au départ, la finalité était de regarder la biomasse des différentes espèces. Ce qui a permis d'arriver à une méthodologie de recherche en plusieurs temps:
+\begin{itemize}
+\item{la \textbf{recherche large}: très grande gamme de valeurs pour les paramètres, mais très écartées (pas de répétitions),}
+\item{la \textbf{recherche fine}: faible gamme de valeurs pour les paramètres et assez rapprochées (pas de répétitions),}
+\item{la \textbf{recherche profonde}: très faible gamme de valeurs, très rapprochées (grand nombre de répétitions).}
+\end{itemize}
+Le but étant d'isolé des valeurs interessante puis de vérifier la robustesse de celle-ci.
+\\
+Un autre avantage du \textit{BehaviorSpace} est qu'il permet aussi d'enregistrer dans un fichier des valeurs particulières (par exemple la biomasse des agents thons) et d'avoir la moyenne à chaque tour, permettant de connaitre l'espérance sur un grand nombre d'expériences (ce qui s'avère aussi utile pour le score).
+\begin{figure}[h]
+  \begin{center}
+    \includegraphics[scale=0.50]{img/behaviorspace.png}
+  \end{center}
+  \caption{Exemple de configuration du \textit{BehaviorSpace}.}
+  \label{fig:behaviorspace}
+\end{figure}
+
+La deuxième grande partie de l'experimentation permet de mesurer l'impact de la pêche sur un jeu de données connu, en comparant les bateaux critère par critère (spécialisé contre opportuniste, grand stock contre faible stock, faible autonomie contre grande autonomie, etc...). On observe d'un côté l'efficacité des différentes configuration pour connaître la rentabilité la plus forte et de l'autre, et de l'autre l'effet sur les populations de poissons.
+
+\section{Modélisation de l'interface graphique}
+
+En modélisant le projet avec Netlogo, nous disposions des différents outils de représentation graphique de Netlogo :
+\begin{itemize}
+\item{une représentation dans l'espace (voir Figure \ref{fig:espace}),}
+\item{un outil permettant de tracer des courbes en temps réel (voir Figure \ref{fig:courbes}),}
+\item{de multiple éléments graphiques permettant d'avoir un contrôle sur la simulation (voir Figure \ref{fig:boutons}).}
+\end{itemize}
+On peut voir sur la Figure \ref{fig:espace} que la nourriture est représentée par une forme (ronde dans cette modélisation) d'une couleur plus ou moins intense en fonction de la quantité de nourriture, les agents poissons vivants sur le \textit{patch} sont représentés par des poissons (la couleur variant selon l'espèce) et les bateaux par des bateaux. Cette vue permet d'avoir une idée de la représentation spatiale des espèces, et peut être complétée selon l'information précise concernant la présence d'une ou plusieurs espèce(s) (visualisation d'une espèce seulement, visualisation de l'espèce la plus présente par \textit{patch}, etc...), comme on peut le voir sur la Figure \ref{fig:temperature}.
+\\
+Les courbes (voir Figure \ref{fig:courbes}) permettent d'avoir une idée précise de la quantité de poissons en terme de biomasse et de la satisfaction de ceux-ci en nourriture, grâce à la connaissance du stock qui diminue avec sa raréfaction.
+\\
+On a aussi accès à un grand nombre de boutons et de variables (voir Figure \ref{fig:boutons}), qui permettent de tester des configurations (régler les paramètres pour les expérimentations), d'avoir une influence sur l'environnement (croissance du plancton, etc...), ou d'interagir avec l'affichage (température, etc...)
+
+\begin{figure}[h]
+  \begin{center}
+    \includegraphics[scale=0.50]{img/espace.png}
+  \end{center}
+  \caption{Représentation graphique d'une simulation.}
+  \label{fig:espace}
+\end{figure}
+
+\begin{figure}[h]
+  \begin{center}
+    \includegraphics[scale=0.50]{img/courbes.png}
+  \end{center}
+  \caption{Courbes représentant la biomasse ainsi que les stocks de nourriture.}
+  \label{fig:courbes}
+\end{figure}
+
+\begin{figure}[h]
+  \begin{center}
+    \includegraphics[scale=0.50]{img/boutons.png}
+  \end{center}
+  \caption{Boutons de la simulation, permettant de modifier les paramètres de la simulation.}
+  \label{fig:boutons}
+\end{figure}
+
+\begin{figure}[h]
+  \begin{center}
+    \includegraphics[scale=0.50]{img/temperature.png}
+  \end{center}
+  \caption{Carte de temperature des thons.}
+  \label{fig:temperature}
+\end{figure}

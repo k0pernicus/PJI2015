@@ -1,0 +1,7 @@
+Woodcutter      cut         80      Tree    1
+Woodcutter      open        60
+Woodcutter      kill        0
+
+Tree            cut         100
+Tree            burn        80
+Tree            break       60

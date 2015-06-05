@@ -1,0 +1,28 @@
+interaction Reproduce
+    trigger	    canReproduce?
+    condition   stillAlive? not:hungry? target:stillAlive?
+    actions     reproduce eat
+end
+
+interaction Eat
+    trigger     hungry?
+    condition   stillAlive? target:stillAlive?
+    actions     eat
+end
+
+interaction Die
+    trigger     hungry?
+    actions	    die
+end
+
+...
+
+interaction ComputeBiomassReq
+    condition   stillAlive?
+    actions     computeBiomassReq
+end
+
+;;FOOD
+interaction Grow
+    actions     grow
+end

@@ -1,0 +1,19 @@
+to-report agent::hungry?
+    report biomass-req > 0
+end
+
+to-report agent::stillAlive?
+    report biomass-f > 0
+end
+
+to-report food::PREY_stillAlive?
+    report food::PREY_actualFood? > 0
+end
+
+to-report sardines::PRED_stillAlive?
+    report agent::stillAlive?
+end
+
+to agent::eat
+    ...
+end
